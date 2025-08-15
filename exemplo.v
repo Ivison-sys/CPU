@@ -1,7 +1,7 @@
 module bcd(
 output reg[7:0] data,
 output reg EN, RW, RS,
-input rst
+input rst,
 input clk
 );
 
