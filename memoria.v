@@ -1,4 +1,4 @@
-module ram16_8 (
+module ram16_16 (
     input  wire [15:0] data,
     input  wire [3:0] addr,
     input  wire       we,
@@ -16,21 +16,21 @@ module ram16_8 (
     //inicializacao da memoria
     initial begin 
       ram[0] <= 0;
-      ram[1] <= 1;
-      ram[2] <= 2;
-      ram[3] <= 3;
-      ram[4] <= 4;
-      ram[5] <= 5;
-      ram[6] <= 6;   
-      ram[7] <= 7;
-      ram[8] <= 8;
-      ram[9] <= 9;
-      ram[10] <= 10;
-      ram[11] <= 11;
-      ram[12] <= 12;
-      ram[13] <= 13;
-      ram[14] <= 14;
-      ram[15] <= 15;
+      ram[1] <= 0;
+      ram[2] <= 0;
+      ram[3] <= 0;
+      ram[4] <= 0;
+      ram[5] <= 0;
+      ram[6] <= 0;   
+      ram[7] <= 0;
+      ram[8] <= 0;
+      ram[9] <= 0;
+      ram[10] <= 0;
+      ram[11] <= 0;
+      ram[12] <= 0;
+      ram[13] <= 0;
+      ram[14] <= 0;
+      ram[15] <= 0;
     end
 
     always @(posedge clk) begin
