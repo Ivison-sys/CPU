@@ -1,9 +1,10 @@
-module bcd (
+module lcd (
     input btn,
     input enviar,
     input clk,
     input [2:0] opcode,
 	input [3:0] destino,
+    input [15:0] value,
     output reg[7:0] data,
     output reg EN, RW, RS
 );
@@ -33,7 +34,7 @@ reg [2:0] op = 0;
 
 
 // Palavra que vai ser printada
-wire [87:0] palavra;
+wire [143:0] palavra;
 wire [10:0] RS_list;
 
 codificador cod(
@@ -41,6 +42,7 @@ codificador cod(
     .opcode(opcode),
     .palavra(palavra),
     .destino(destino),
+    .value(value),
     .RS_list(RS_list)
 );
 
@@ -97,7 +99,7 @@ always @(posedge clk) begin
                 if(counterA == MS - 1) begin
                     stateA = WRITE;
                     counterA = 0;
-                    if(instructionsA < 20) instructionsA = instructionsA + 1;
+                    if(instructionsA < 30) instructionsA = instructionsA + 1;
                 end else begin
                     counterA = counterA + 1;
                 end
@@ -156,6 +158,14 @@ always @(posedge clk) begin
             13: begin data <= palavra[71:64]; RS <= RS_list[8]; end
             14: begin data <= palavra[79:72]; RS <= RS_list[9]; end
             15: begin data <= palavra[87:80]; RS <= RS_list[10]; end
+            16: begin data <= palavra[95:88]; RS <= RS_list[11]; end
+            17: begin data <= palavra[103:96]; RS <= RS_list[12]; end
+            18: begin data <= palavra[111:104]; RS <= RS_list[13]; end
+            19: begin data <= palavra[119:112]; RS <= RS_list[14]; end
+            20: begin data <= palavra[127:120]; RS <= RS_list[15]; end
+            21: begin data <= palavra[135:128]; RS <= RS_list[16]; end
+            22: begin data <= palavra[143:136]; RS <= RS_list[17]; end
+        
             default: begin data <= 8'h02; RS <= 0; end
         endcase
     end
