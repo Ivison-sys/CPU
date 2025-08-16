@@ -3,6 +3,7 @@ module bcd (
     input enviar,
     input clk,
     input [2:0] opcode,
+	input [3:0] destino,
     output reg[7:0] data,
     output reg EN, RW, RS
 );
@@ -12,6 +13,9 @@ parameter LIGADO= 0, DESLIGADO= 1;
 reg estadoAtual = DESLIGADO;
 reg oldBtn = 1;
 reg ativo = DESLIGADO;
+
+// Variáveis do botao
+reg oldEnviar = 1;
 
 // Variaveis relacionadas ao LCD
 reg [31:0] counterA = 0;
@@ -27,13 +31,17 @@ reg [7:0] instructionsB = 0;
 parameter LOAD = 3'b000, ADD = 3'b001, ADDI = 3'b010, SUB = 3'b011, SUBI = 3'b100, MUL = 3'b101, CLEAR = 3'b110, DPL = 3'b111;
 reg [2:0] op = 0;
 
+
 // Palavra que vai ser printada
-reg [39:0] palavra;
+wire [87:0] palavra;
+wire [10:0] RS_list;
 
 codificador cod(
     .clk(clk),
     .opcode(opcode),
-    .palavra(palavra)
+    .palavra(palavra),
+    .destino(destino),
+    .RS_list(RS_list)
 );
 
 
@@ -66,6 +74,13 @@ end
 
 
 always @(posedge clk) begin
+    // Condicionais do botão enviar
+    oldEnviar <= enviar;
+    if(oldEnviar == 0 && enviar == 1) begin 
+        instructionsA = 0;
+		  counterA = 0;
+    end
+
     if(ativo == LIGADO) begin
 		  instructionsB <= 0;
 		  counterB <= 0;
@@ -91,7 +106,7 @@ always @(posedge clk) begin
         endcase
     end else begin 
         instructionsA <= 0;
-		  counterA <= 0;
+		counterA <= 0;
         case (stateB)
             WRITE: begin
                 if(counterB == MS) begin
@@ -116,6 +131,8 @@ always @(posedge clk) begin
 end
 
 always @(posedge clk) begin
+    
+    //  condicionais do estado geral do LDC
     if(ativo == LIGADO) begin
         case (stateA)
             WRITE: EN <= 1;
@@ -128,11 +145,17 @@ always @(posedge clk) begin
             2: begin data <= 8'h01; RS <= 0; end //Clear
             3: begin data <= 8'h02; RS <= 0; end //Cursor Home
             4: begin data <= 8'h06; RS <= 0; end // Pula o cursor quando printa
-            5: begin data <= palavra[7:0]; RS <= 0; end
-            6: begin data <= palavra[15:8]; RS <= 0; end
-            7: begin data <= palavra[23:16]; RS <= 0; end
-            8: begin data <= palavra[31:24]; RS <= 0; end
-            9: begin data <= palavra[39:32]; RS <= 0; end
+            5: begin data <= palavra[7:0]; RS <= RS_list[0]; end
+            6: begin data <= palavra[15:8]; RS <= RS_list[1]; end
+            7: begin data <= palavra[23:16]; RS <= RS_list[2]; end
+            8: begin data <= palavra[31:24]; RS <= RS_list[3]; end
+            9: begin data <= palavra[39:32]; RS <= RS_list[4]; end
+            10: begin data <= palavra[47:40]; RS <= RS_list[5]; end
+            11: begin data <= palavra[55:48]; RS <= RS_list[6]; end
+            12: begin data <= palavra[63:56]; RS <= RS_list[7]; end
+            13: begin data <= palavra[71:64]; RS <= RS_list[8]; end
+            14: begin data <= palavra[79:72]; RS <= RS_list[9]; end
+            15: begin data <= palavra[87:80]; RS <= RS_list[10]; end
             default: begin data <= 8'h02; RS <= 0; end
         endcase
     end
